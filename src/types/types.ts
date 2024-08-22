@@ -3,11 +3,12 @@ export interface ICard {
   title: string;
   description: string;
   price: number;
-  category: string;
+  category: TCategory;
   image: string;
+  inBasket: boolean;
 }
 
-export interface ICustomer {
+export interface IOrder {
   payment: 'online' | 'cash-on-delivery';
   email: string;
   phone: string;
@@ -22,7 +23,7 @@ export interface ICardsData {
   getCard(cardId: string): ICard;
 }
 
-export interface IBasket {
+export interface IBasketData {
   cards: ICard[];
   total: number;
   addCard(card: ICard): void;
@@ -31,3 +32,6 @@ export interface IBasket {
 
 export type TOrderInfo = Pick<ICard, 'title' | 'price'>;
 
+export type TCategory = 'другое'|'софт-скил'|'дополнительное'|'кнопка'|'хард-скил';
+
+export type TPaymentMethod = 'онлайн' | 'при получении'
