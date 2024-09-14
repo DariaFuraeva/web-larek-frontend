@@ -1,3 +1,12 @@
+// export interface ICard {
+//   id: string;
+//   title: string;
+//   description: string;
+//   price: number;
+//   category: TCategory;
+//   image: string;
+//   inBasket: boolean;
+// }
 export interface ICard {
   id: string;
   title: string;
@@ -5,11 +14,10 @@ export interface ICard {
   price: number;
   category: TCategory;
   image: string;
-  inBasket: boolean;
 }
 
 export interface IOrder {
-  payment: 'online' | 'cash-on-delivery';
+  payment: TPaymentMethod;
   email: string;
   phone: string;
   address: string;
@@ -30,8 +38,17 @@ export interface IBasketData {
 	deleteCard(cardId: string): void;
 }
 
+export interface IAppState {
+  catalog: ICard[];
+  basket: ICard[];
+  preview: string | null;
+  order: IOrder | null;
+}
+
 export type TOrderInfo = Pick<ICard, 'title' | 'price'>;
 
 export type TCategory = 'другое'|'софт-скил'|'дополнительное'|'кнопка'|'хард-скил';
 
 export type TPaymentMethod = 'онлайн' | 'при получении'
+
+export type FormErrors = Partial<Record<keyof IOrder, string>>;

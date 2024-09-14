@@ -8,5 +8,6 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
   },
+  "include": ["src/**/*.ts", "src/types/*.d.ts"]
   //"include": ["src/index.ts", "src/types/*.d.ts"]
 }
