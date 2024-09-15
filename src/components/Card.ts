@@ -46,34 +46,36 @@ export class Card<T> extends Component<ICard> {
 
     set title(value: string) {
         this.setText(this._title, value);
-        // или так?
-        //this._title.textContent = value;
     }
 
     set price(value: number | null) {
+        // if (this._price != null) {
+        //     this.setText(this._price, value + ' синапсов')
+        //     console.log('Нормальная карточка', this._price.textContent)
+        // } else { if (this._price = null) {
+
+        //     this.setText(this._price, 'Бесценно')
+        //     console.log('Бесценная карточка', this._price.textContent)
+        // }}
+
         this._price.textContent = value
           ? value + ' синапсов'
           : 'Бесценно';
+
         if (this._button && !value) {
           this._button.disabled = true;
-        }
-      }
-
-    set selected(value: boolean) {
-        if (!this._button.disabled) {
-          this._button.disabled = value;
         }
       }
 
     get title(): string {
         return this._title.textContent || '';
     }
-    /*set image(value: string) {
-        this.setImage(this._image, value, this.title)
-    }*/
-        set image(value: string) {
-            this._image.src = CDN_URL + value;
-          }
+    // set image(value: string) {
+    //     this.setImage(this._image, value, this.title)
+    // }
+    set image(value: string) {
+        this._image.src = CDN_URL + value;
+    }
 
     set description(value: string | string[]) {
         if (Array.isArray(value)) {
@@ -108,7 +110,7 @@ export class CardsCatalog extends Card<ICard> {
     // }
 }
 
-export class CardPreview extends Card<ICard> {
+export class CardPreviewItem extends Card<ICard> {
     protected _description: HTMLElement;
     protected _button?: HTMLButtonElement;
 
@@ -127,7 +129,7 @@ export class CardPreview extends Card<ICard> {
       }
 }
 
-export class CatalogCard extends Card<ICard> {
+export class CatalogItem extends Card<ICard> {
     constructor(container: HTMLElement, actions?: ICardActions) {
       super('card', container, actions);
     }

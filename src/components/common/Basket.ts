@@ -9,38 +9,34 @@ interface IBasketView {
 }
 
 export class BasketView extends Component<IBasketView> {
-    protected _list: HTMLElement;
+    protected _backetItems: HTMLElement;
     protected _total: HTMLElement;
     protected _button: HTMLButtonElement;
 
     constructor(container: HTMLElement, protected events: EventEmitter) {
         super(container);
-
-        this._list = ensureElement<HTMLElement>('.basket__list', container);
+        this._backetItems = ensureElement<HTMLElement>('.basket__list', container);
         this._total = container.querySelector('.basket__price');
         this._button = container.querySelector('.basket__button');
 
         if (this._button) {
             this._button.addEventListener('click', () => {
-                events.emit('order:open');
+              events.emit('basket:openOrder');
             });
         }
 
-        this.backetItems = [];
+        // this.backetItems = [];
     }
-
-    set list(items: HTMLElement[]) {
-        this._list.replaceChildren(...items);
-        this._button.disabled = items.length ? false : true;
-      }
 
     set backetItems(items: HTMLElement[]) {
         if (items.length) {
-            this._list.replaceChildren(...items);
+            this._backetItems.replaceChildren(...items);
+            this._button.disabled = false;
         } else {
-            this._list.replaceChildren(createElement<HTMLParagraphElement>('p', {
+            this._backetItems.replaceChildren(createElement<HTMLParagraphElement>('p', {
                 textContent: 'Корзина пуста'
             }));
+            this._button.disabled = true;
         }
     }
 
@@ -52,52 +48,42 @@ export class BasketView extends Component<IBasketView> {
         }
     }
 
-
-
     set total(total: number) {
         this.setText(this._total, total);
     }
-    refreshIndices() {
-        Array.from(this._list.children).forEach(
-          (item, index) =>
-          (item.querySelector(`.basket__item-index`)!.textContent = (
-            index + 1
-          ).toString())
+
+    uptateIndex() {
+        Array.from(this._backetItems.children).forEach(
+          (item, index) => (item.querySelector(`.basket__item-index`)!.textContent = (index + 1).toString())
         );
       }
 }
 
+// Карточка товара в корзине
 export interface ICardBasket extends ICard {
     id: string;
     index: number;
 }
 
-export interface IStoreItemBasketActions {
-    onClick: (event: MouseEvent) => void;
-}
-
-  export class StoreItemBasket extends Component<ICardBasket> {
+  export class CardInBasket extends Component<ICardBasket> {
     protected _index: HTMLElement;
     protected _title: HTMLElement;
     protected _price: HTMLElement;
     protected _button: HTMLButtonElement;
 
-    constructor(
-      protected blockName: string,
-      container: HTMLElement,
-      actions?: IStoreItemBasketActions
-    ) {
+    constructor( container: HTMLElement, events?: {onClick: (event: MouseEvent) => void;}
+    ){
       super(container);
 
-      this._title = container.querySelector(`.${blockName}__title`);
-      this._index = container.querySelector(`.basket__item-index`);
-      this._price = container.querySelector(`.${blockName}__price`);
-      this._button = container.querySelector(`.${blockName}__button`);
+      this._title = container.querySelector('.card__title');
+      this._index = container.querySelector('.basket__item-index');
+      this._price = container.querySelector('.card__price');
+      this._button = container.querySelector('.basket__item-delete');
 
       if (this._button) {
         this._button.addEventListener('click', (evt) => {
           this.container.remove();
-          actions?.onClick(evt);
+          events?.onClick(evt);
         });
       }
     }

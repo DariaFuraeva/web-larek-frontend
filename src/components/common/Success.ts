@@ -12,15 +12,11 @@ export class SuccessMessage extends Component<ISuccess> {
   protected _button: HTMLButtonElement;
   protected _description: HTMLElement;
 
-  constructor(
-    protected blockName: string,
-    container: HTMLElement,
-    actions?: ISuccessAction
-  ) {
+  constructor( container: HTMLElement, actions?: ISuccessAction) {
     super(container);
 
-    this._button = container.querySelector(`.${blockName}__close`);
-    this._description = container.querySelector(`.${blockName}__description`);
+    this._button = container.querySelector('.order-success__close');
+    this._description = container.querySelector('.order-success__description');
 
     if (actions?.onClick) {
       if (this._button) {
@@ -29,4 +25,7 @@ export class SuccessMessage extends Component<ISuccess> {
     }
   }
 
+  set description (value: number) {
+    this.setText(this._description, String(value) + ' синапсов');
+  }
 }

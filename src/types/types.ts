@@ -17,12 +17,21 @@ export interface ICard {
 }
 
 export interface IOrder {
-  payment: TPaymentMethod;
+  //payment: TPaymentMethod;
+  payment: string;
   email: string;
   phone: string;
   address: string;
   total: number;
-  items: ICard[];
+  items: string[];
+}
+
+export interface IOrderForm {
+  //payment: TPaymentMethod;
+  payment: string;
+  address: string;
+  email: string;
+  phone: string;
 }
 
 export interface ICardsData {
@@ -42,7 +51,7 @@ export interface IAppState {
   catalog: ICard[];
   basket: ICard[];
   preview: string | null;
-  order: IOrder | null;
+  order: IOrderForm | null;
 }
 
 export type TOrderInfo = Pick<ICard, 'title' | 'price'>;
@@ -51,4 +60,4 @@ export type TCategory = 'другое'|'софт-скил'|'дополнител
 
 export type TPaymentMethod = 'онлайн' | 'при получении'
 
-export type FormErrors = Partial<Record<keyof IOrder, string>>;
+export type FormErrors = Partial<Record<keyof IOrderForm, string>>;

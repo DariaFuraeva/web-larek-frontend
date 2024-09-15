@@ -53,6 +53,13 @@ interface ICard {
   image: string;
 }
 ```
+Форма
+```
+interface IFormState {
+    valid: boolean;
+    errors: string[];
+}
+```
 
 Данные о заказе
 ```
@@ -66,6 +73,13 @@ interface IOrder {
 
 }
 ```
+Контакты
+```
+interface IContacts {
+  phone: string;
+  email: string;
+}
+```
 
 Интерфейс для модели данных карточек
 ```
@@ -73,8 +87,9 @@ interface ICardsData {
 	cards: ICard[];
 //	preview: string;
 }
+
 ```
-Корзина с выбранными товарами(карточками)
+Карточка това в корзине
 ```
 interface ICardBasket {
   cards: ICard[];
@@ -82,6 +97,39 @@ interface ICardBasket {
   deleteCard(cardId: string): void;
 }
 ```
+
+
+Корзина с выбранными карточками товаров
+```
+interface IBasketView{
+    backetItems: HTMLElement[];
+    total: number;
+}
+```
+
+Состояние приложения
+```
+interface IAppState {
+  catalog: ICard[];
+  basket: ICard[];
+  preview: string | null;
+  order: IOrderForm | null;
+}
+```
+
+Модальное окно
+```
+interface IModalData {
+  content: HTMLElement;
+}
+```
+Успешный заказ
+```
+interface ISuccess {
+  description: number;
+}
+```
+
 Данные карточки, используемые в модальном окне при открытии корзины с покупками
 ```
 type TOrderInfo = Pick<ICard, 'title' | 'price'>
@@ -112,6 +160,53 @@ type TPaymentMethod = 'онлайн' | 'при получении'
 
 ### Слой данных
 
+#### Класс Model
+Базовая модель, чтобы можно было отличить ее от простых объектов с данными\
+Метод класса:
+emitChanges(event: string, payload?: object)
+
+
+#### Класс Card
+Расширяет класс Model.\
+В полях класса содержатся следующие данные:
+description: string;
+    id: string;
+    image: string;
+    title: string;
+    price: number;
+    category: TCategory;
+
+#### Класс AppState
+Расширяет класс Model.\
+В полях класса содержатся следующие данные:
+- preview: string | null; - id карточки для превью.
+- order: IOrder = {
+      items: [],
+      email: '',
+      payment: '',
+      address: '',
+      phone: '',
+      total: null
+  }; - объект с данными для заказа.
+- catalog: Card[] - массив всех карточек товаров в каталоге.
+- basket: Card[]=[] - массив карточек товаров в корзине
+- formErrors: FormErrors = {}; - объект ошибок, возникающих при заполнении форм.
+
+Так же класс предоставляет набор методов для взаимодействия с этими данными.
+setCatalog(items: ICard[]) - заполнение каталога карточками,
+setPreview(item: ICard) - заполнение превью карточки,
+addToBasket(item: Card) - добавление товара в корзину,
+removeFromBasket(id: string) - удаление товара из корзины,
+getTotal() - получение суммы всего заказа,
+clearBasket() - очистка корзины,
+getQuantityCardsInBasket () - получение количества товаров в корзне,
+setOrderedItems() - заполнение выбранных в заказе товаров,
+setOrderField(field: keyof IOrderForm, value: string) - заполнение полей формы заказа,
+createOrder() - создание заказа,
+validateOrder() - валидация формы заказа (адрес, способ оплаты)
+validateContacts() - валидация формы заказа (контакты)
+
+
 #### Класс CardsCatalog
 Класс отвечает за хранение и логику работы с данными карточек товаров.\
 Конструктор класса принимает инстант брокера событий\
@@ -121,7 +216,6 @@ type TPaymentMethod = 'онлайн' | 'при получении'
 
 Так же класс предоставляет набор методов для взаимодействия с этими данными.
 - getCard(cardId: string): ICard - возвращает карточку по ее id
-- а так-же сеттеры и геттеры для сохранения и получения данных из полей класса
 
 #### Класс BasketData
 Класс отвечает за хранение и логику работы с данными товаров, добавленных в корзину.
@@ -147,43 +241,38 @@ constructor(protected readonly container: HTMLElement).
 - setDisabled(element: HTMLElement, state: boolean) - Сменить статус блокировки.
 - protected setHidden(element: HTMLElement) - Скрыть.
 - protected setVisible(element: HTMLElement) - Показать.
-- protected setImage(element: HTMLImageElement, src: string, alt?: string) - Установить изображение с алтернативным текстом.
+- protected setImage(element: HTMLImageElement, src: string, alt?: string) - Установить изображение с альтернативным текстом.
 - render(data?: Partial<T>): HTMLElement - Вернуть корневой DOM-элемент.
 
 #### Класс Form extends Component
 Расширяет класс Component. Ревлизует отображение формы. В конструктор передается DOM-элемент
 
 Поля класса:
-- _form: HTMLFormElement - элемент формы.
-- formName: string - значение атрибута name формы.
-- _submitButton: HTMLButtonElement;
-- isValid: boolean - определяет, является ли форма заказа валидной.
+- _submit: HTMLButtonElement;
+- _errors: HTMLElement;
 
 Методы:
-- setValid(isValid: boolean): void - изменяет активность кнопки подтверждения.
-- ValidateForm(): метод, который проверяет валидность формы заказа и обновляет значение isValid.
-- get form: HTMLElement - геттер для получения элемента формы.
+- set valid(value: boolean) - изменяет активность кнопки подтверждения.
+- set errors(value: string)
+- onInputChange((field: keyof T, value: string))
 - render(HTMLElement): HTMLElement - метод возвращает отрисованный элемент.
 
 #### Класс OrderForm extends Form
 Расширяет класс Form. Представляет собой форму заказа. В конструктор класса передается DOM элемент темплейта (id="order") и обработчик событий.
 
 Поля класса:
-- paymentMethod: TPaymentMethod - выбранный способ оплаты ("онлайн" или "при получении").
-- inputAddress: string - введенный адрес доставки.
+- _card
+- _cash
 
 Методы:
-- handlePaymentMethodClick():string - обрабатывает клик на кнопке выбора способа оплаты и возвращает значение paymentMethod.
-- getInputValue(): Record<string, string> - возвращает объект с данными из полей формы, где ключ - name инпута, значение - данные введенные пользователем.
-- submitForm(): метод, который обрабатывает нажатие на кнопку "Далее".
-
+- disableButtons()
 
 #### Класс ContactsForm extends Form
 Расширяет класс Form. Отвечает за отображение формы ввода контактных данных пользователя. В конструктор класса передается DOM элемент темплейта (id="contacts") и обработчик событий.
 
 Поля класса:
-- inputEmail - поле ввода для почты.
-- inputPhone - поле ввода для номера телефона.
+- email - поле ввода для почты.
+- phone - поле ввода для номера телефона.
 
 Методы:
 - getInputValue(): Record<string, string> - возвращает объект с данными из полей формы, где ключ - name инпута, значение - данные введенные пользователем.
@@ -193,11 +282,14 @@ constructor(protected readonly container: HTMLElement).
 - constructor(selector: string, events: IEvents) Конструктор принимает селектор, по которому в разметке страницы будет идентифицировано модальное окно и экземпляр класса `EventEmitter` для возможности инициации событий.
 
 Поля класса
-- modal: HTMLElement - элемент модального окна
+- _closeButton: HTMLButtonElement;
+- _content: HTMLElement;
 - events: IEvents - брокер событий
 
 Методы:
-- render(HTMLElement): HTMLElement - метод возвращает отрисованное модальное окно.
+- open()
+- close()
+- render(data: IModalData): HTMLElement - метод возвращает отрисованное модальное окно.
 
 
 #### Класс BasketView extends Component
@@ -205,24 +297,26 @@ constructor(protected readonly container: HTMLElement).
 В конструктор передается DOM-элемент темплейта (id="card-basket") и обработчик событий.
 
 Поля класса:
-- _items: HTMLElement;
+- _backetItems: HTMLElement;
 - _total: HTMLElement;
 - _button: HTMLElement;
 - events: IEvents - брокер событий.
 
 Методы:
-- handleRemoveFromBasket(): обработчик нажатия на кнопку удаления товара из корзины.
-- setValid(isValid: boolean): void - изменяет активность кнопки подтверждения.
-- render(HTMLElement): HTMLElement - Метод, который создает DOM-элемент на основе шаблона и заполняет его данными из свойств класса.
-
+- set backetItems(items: HTMLElement[])
+- set selected(items: string[])
+- set total(total: number)
+- uptateIndex()
 
 #### Класс SuccessMessage extends Component
 асширяет класс Component. Отображает сообщение об успешном оформлении заказа. В конструктор класса передается DOM элемент темплейта (id="success").
 
 Поля класса:
-- submitButton: HTMLButtonElement - Кнопка подтверждения.
-- handleSubmit: Function - функция, на выполнение которой запрашивается подтверждение
-- events: IEvents - брокер событий
+- _button: HTMLButtonElement;
+- _description: HTMLElement;
+
+Методы:
+- set description (value: number)
 
 
 #### Класс Card extends Component
@@ -235,12 +329,30 @@ constructor(protected readonly container: HTMLElement).
 - _price: HTMLElement;
 - _category: HTMLElement;
 - _image: HTMLImageElement;
+- _button: HTMLButtonElement;
 
 Методы:
-- setData(cardData: ICard): void - заполняет атрибуты элементов карточки данными.
-- handleClickCard(): void - обработчик нажатия на карточку.
-- render(): HTMLElement - метод возвращает полностью заполненную карточку с установленными слушателями
-- геттер id возвращает уникальный id карточки
+- set id(value: string)
+- get id(): string
+- set title(value: string)
+- set price(value: number | null)
+- get title()
+- set image(value: string)
+- set description(value: string | string[])
+
+
+#### Класс CardInBasket
+Расширяет класс Component. Отвечает за отображение карточки товара в корзине.
+Поля:
+- _index: HTMLElement;
+- _title: HTMLElement;
+- _price: HTMLElement;
+- _button: HTMLButtonElement;
+
+Методы:
+- set title(value: string)
+- set index(value: number)
+- set price(value: number)
 
 #### Класс Page extends Component
 Расширяет класс Component. Отвечает за отображение главной страницы. Конструктор принимает DOM-элемент и обработчик событий.
@@ -253,6 +365,7 @@ constructor(protected readonly container: HTMLElement).
 Методы:
 - set counter(value: number)
 - set catalog(items: HTMLElement[])
+- set locked(value: boolean)
 
 ### Слой коммуникации
 

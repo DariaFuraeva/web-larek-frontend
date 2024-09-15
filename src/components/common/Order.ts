@@ -6,11 +6,8 @@ export class OrderForm extends Form<IOrder> {
   protected _card: HTMLButtonElement;
   protected _cash: HTMLButtonElement;
 
-  constructor(
-    protected blockName: string,
-    container: HTMLFormElement,
-    protected events: IEvents
-  ) {
+
+  constructor(container: HTMLFormElement, protected events: IEvents) {
     super(container, events);
 
     this._card = container.elements.namedItem('card') as HTMLButtonElement;

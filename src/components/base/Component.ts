@@ -39,7 +39,7 @@ export abstract class Component<T> {
         element.style.removeProperty('display');
     }
 
-    // Установить изображение с алтернативным текстом
+    // Установить изображение с альтернативным текстом
     protected setImage(element: HTMLImageElement, src: string, alt?: string) {
         if (element) {
             element.src = src;
