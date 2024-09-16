@@ -61,3 +61,7 @@ export type TCategory = 'другое'|'софт-скил'|'дополнител
 export type TPaymentMethod = 'онлайн' | 'при получении'
 
 export type FormErrors = Partial<Record<keyof IOrderForm, string>>;
+
+export type cardCategory = {
+  [Key in TCategory]: string;
+};

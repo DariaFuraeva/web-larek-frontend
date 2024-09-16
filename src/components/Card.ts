@@ -9,6 +9,14 @@ interface ICardActions {
     onClick: (event: MouseEvent) => void;
 }
 
+const cardsCategories = {
+    'софт-скил': 'card__category_soft',
+    'хард-скил': 'card__category_hard',
+    'другое': 'card__category_other',
+    'дополнительное': 'card__category_additional',
+    'кнопка': 'card__category_button'
+  };
+
 export class Card<T> extends Component<ICard> {
     protected _title: HTMLElement;
     protected _image?: HTMLImageElement;
@@ -88,7 +96,13 @@ export class Card<T> extends Component<ICard> {
             this.setText(this._description, value);
         }
     }
+    set category(value: TCategory) {
+        this._category.textContent = value;
+        // this._category.classList.add(`card__category_${value}`);
+        this._category.classList.add(cardsCategories[value])
+      }
 }
+
 
 // export type CatalogItemStatus = {
 //     status: LotStatus,

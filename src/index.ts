@@ -94,6 +94,7 @@ events.on<CatalogChangeEvent>('items:changed', () => {
             title: item.title,
             image: item.image,
             description: item.description,
+            category: item.category
             // status: {
             //     status: item.status,
             //     label: item.statusLabel
