@@ -126,9 +126,11 @@ events.on('card:selected', (item: Card) => {
         description: item.description,
         price: item.price,
         category: item.category,
+  
         image: item.image,
       }),
     });
+    console.log(item.category);
 });
 
 

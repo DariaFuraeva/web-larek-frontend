@@ -99,6 +99,7 @@ export class Card<T> extends Component<ICard> {
     set category(value: TCategory) {
         this._category.textContent = value;
         // this._category.classList.add(`card__category_${value}`);
+        this._category.classList.remove('card__category_other');
         this._category.classList.add(cardsCategories[value])
       }
 }
